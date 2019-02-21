@@ -31,7 +31,7 @@ def process_suffix(part, module):
     return result
 
 
-def make_meaningful_name(orig, module, column_translations):
+def make_meaningful_name(orig, module, translations):
     # print("\n", orig)
     # print('make_meaningful_name', module.replace(' ', ''))
 
@@ -43,7 +43,7 @@ def make_meaningful_name(orig, module, column_translations):
         processed_part = part
         # --- Prefix
         if(index == 0):
-            processed_part = column_translations['prefix'].get(part, part)
+            processed_part = translations['columns']['prefix'].get(part, part)
             # processed_part = process_prefix(processed_part, module)
 
         # --- Second to Last
@@ -55,11 +55,11 @@ def make_meaningful_name(orig, module, column_translations):
             processed_part = process_suffix(processed_part, module)
 
         # result_split[index] = process_by_module(processed_part, module)
-        module_switcher = column_translations['module'].get(
+        module_switcher = translations['columns']['module'].get(
             module.replace(' ', ''), {})
         processed_part = module_switcher.get(processed_part, processed_part)
 
-        result_split[index] = column_translations['general'].get(
+        result_split[index] = translations['columns']['general'].get(
             processed_part, processed_part)
 
     cleaned_result = list(filter(lambda x: len(x) > 0, result_split))

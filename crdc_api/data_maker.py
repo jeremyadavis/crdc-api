@@ -15,24 +15,28 @@ from utils import (
     execute_sql
 )
 
-from column_translator import make_meaningful_name
+from translator import make_meaningful_name
 
 from sqlalchemy import text
 
 
 class DataMaker:
-    def __init__(self, engine, config, column_translations):
+    def __init__(self, engine, config, translations):
         self.engine = engine
         self.data_file_index = config['data_file_index'].lower()
         self.table_prefix = config['table_prefix']
-        self.df_layout = get_layout_file(config['layout_file'])
+        self.df_layout = get_layout_file(config['layout_file'], translations)
         self.df_data = get_data_file(
-            config['data_file'], self.data_file_index)
-        self.column_translations = column_translations
+            config['data_file'], self.data_file_index, 1000)
+        self.translations = translations
 
     def make_tables_and_files(self):
         table_map = make_table_row_map(
-            self.df_layout, self.data_file_index, self.table_prefix)
+            self.df_layout,
+            self.data_file_index,
+            self.table_prefix,
+            self.translations
+        )
 
         for table_name, df_columns in table_map.items():
             print(f"    * Making Table {table_name}")
@@ -48,6 +52,9 @@ class DataMaker:
                                method="multi",
                                schema=DB_SCHEMA,
                                chunksize=10000)
+
+            execute_sql(
+                self.engine, f"ALTER TABLE {DB_SCHEMA}.\"{table_name}\" ADD PRIMARY KEY (\"{self.data_file_index}\");")
 
     def make_views(self):
         curr_table_name = ""
@@ -66,7 +73,7 @@ class DataMaker:
             if row.column_name != self.data_file_index:
                 # ====== Create View Field Names
                 view_column = make_meaningful_name(
-                    row.column_name, row.module, self.column_translations)
+                    row.column_name, row.module, self.translations)
                 # view_column = row.column_name
                 view_statement += self.view_sql_column(
                     row.column_name, view_column, is_last_column)
@@ -80,7 +87,9 @@ class DataMaker:
                 execute_sql(self.engine, view_statement)
 
     def view_sql_start(self, view_name):
-        view_name = viewnameify(view_name, self.table_prefix)
+        prefix_option = self.table_prefix if not view_name in self.translations[
+            'tables']['noprefix'] else None
+        view_name = viewnameify(view_name, prefix_option)
         print(f"    * Making View {view_name}")
         return (
             f"CREATE OR REPLACE VIEW {DB_SCHEMA}.\"{view_name}\"\n\tAS\n"
@@ -94,4 +103,6 @@ class DataMaker:
         return sql_str
 
     def view_sql_end(self, table_name):
-        return f"\tFROM\n\t\t{DB_SCHEMA}.\"{tablenamify(table_name, self.table_prefix)}\";\n\n"
+        prefix_option = self.table_prefix if not table_name in self.translations[
+            'tables']['noprefix'] else None
+        return f"\tFROM\n\t\t{DB_SCHEMA}.\"{tablenamify(table_name, prefix_option)}\";\n\n"

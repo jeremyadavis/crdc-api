@@ -13,7 +13,7 @@ from utils import (
 )
 
 
-def get_layout_file(filename):
+def get_layout_file(filename, translations):
     df = pandas.read_csv(INPUT_DIR+filename,
                          encoding='LATIN-1',
                          header=0,
@@ -21,7 +21,14 @@ def get_layout_file(filename):
                                 'column_name', 'description', 'module']
                          )
 
-    df['table_name'] = df['module'].map(make_table_name)
+    translated_modules = df['module'].map(
+        lambda m: translations['tables']['modules'].get(m, m))
+
+    # translated_modules.map(lambda m: print(
+    #     'test', m, m in translations['tables']['noprefix']))
+    # print('test', translated_modules)
+
+    df['table_name'] = translated_modules.map(make_table_name)
     df['next_table_name'] = df['table_name'].shift(-1)
 
     df['column_name'] = df['column_name'].map(lambda x: x.lower())
@@ -45,14 +52,18 @@ def get_data_file(filename, index_col, num_rows=None):
     return df
 
 
-def make_table_row_map(df, index, prefix):
+def make_table_row_map(df, index, prefix, translations):
     curr_table_name = ""
     table_row_map = {}
 
     for row in df.itertuples():
-
-        if(tablenamify(row.table_name, prefix) != curr_table_name):
-            curr_table_name = tablenamify(row.next_table_name, prefix)
+        # print('row.table_name', row.table_name)
+        prefix_option = prefix if row.table_name not in translations[
+            'tables']['noprefix'] else None
+        if(tablenamify(row.table_name, prefix_option) != curr_table_name):
+            prefix_option = prefix if row.next_table_name not in translations[
+                'tables']['noprefix'] else None
+            curr_table_name = tablenamify(row.next_table_name, prefix_option)
             table_row_map[curr_table_name] = []
 
         if row.column_name != index:

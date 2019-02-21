@@ -1,0 +1,13 @@
+- args:
+    name: identificaion
+    table:
+      name: lea_high_school_equivalency_(ged)
+      schema: crdc
+    using:
+      manual_configuration:
+        column_mapping:
+          leaid: leaid
+        remote_table:
+          name: lea_identification
+          schema: crdc
+  type: create_object_relationship

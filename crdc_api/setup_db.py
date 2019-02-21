@@ -1,9 +1,10 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.schema import CreateSchema, DropSchema
 from constants import (
     DATABASE_URL,
     DB_SCHEMA
 )
+from sqlalchemy.sql import exists, select
 
 
 def connect_to_db():
@@ -20,6 +21,12 @@ def connect_to_db():
 
 def setup_schema(engine):
     with engine.connect() as conn:
+        has_schema = conn.execute(text(
+            f"SELECT schema_name FROM information_schema.schemata WHERE schema_name = '{DB_SCHEMA}';"))
+
+        if not has_schema.scalar():
+            conn.execute(CreateSchema(DB_SCHEMA))
+
         conn.execute(DropSchema(DB_SCHEMA, None, True))
         conn.execute(CreateSchema(DB_SCHEMA))
 

@@ -17,7 +17,7 @@ def main():
     setup_data()
     engine = setup_db()
 
-    # print("--- STEP 3: CREATE LEA ARTIFACTS")
+    print("--- STEP 3: CREATE LEA ARTIFACTS")
     lea_config = {
         'layout_file': CRDCFile.LeaLayout.value,
         'data_file': CRDCFile.LeaData.value,
@@ -25,9 +25,9 @@ def main():
         'table_prefix': 'lea_'
     }
 
-    lea_column_translations = open('./crdc_api/lea_column_translations.json')
+    lea_translations = open('./crdc_api/lea_translations.json')
     lea_maker = DataMaker(engine, lea_config,
-                          json.load(lea_column_translations))
+                          json.load(lea_translations))
     lea_maker.make_tables_and_files()
     lea_maker.make_views()
 
@@ -38,10 +38,10 @@ def main():
         'data_file_index': 'COMBOKEY',
         'table_prefix': 'sch_'
     }
-    school_column_translations = open(
-        './crdc_api/school_column_translations.json')
+    school_translations = open(
+        './crdc_api/school_translations.json')
     school_maker = DataMaker(engine, school_config,
-                             json.load(school_column_translations))
+                             json.load(school_translations))
     school_maker.make_tables_and_files()
     school_maker.make_views()
 

@@ -1,0 +1,13 @@
+- args:
+    name: identificaion
+    table:
+      name: lea_distance_education
+      schema: crdc
+    using:
+      manual_configuration:
+        column_mapping:
+          leaid: leaid
+        remote_table:
+          name: lea_identification
+          schema: crdc
+  type: create_object_relationship

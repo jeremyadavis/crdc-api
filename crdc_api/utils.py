@@ -81,18 +81,20 @@ def make_table_name(orig): return orig.replace(
 
 
 def prefixify(name, prefix):
-    if(not name.startswith(prefix)):
-        return prefix + name
+    # if(not name.startswith(prefix)):
+    return prefix + name
 
-    return name
+    # return name
 
 
 def tablenamify(name, prefix):
-    return prefixify(name + "_table", prefix)
+    return f"{prefix + name}_table" if prefix else f"{name}_table"
+    # return prefixify(name + "_table", prefix)
 
 
 def viewnameify(name, prefix):
-    return prefixify(name, prefix)
+    return f"{prefix + name}" if prefix else name
+    # return prefixify(name, prefix)
 
 
 def execute_sql(engine, statement):

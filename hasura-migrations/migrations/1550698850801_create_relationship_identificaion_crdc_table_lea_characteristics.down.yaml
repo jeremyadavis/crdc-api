@@ -1,0 +1,6 @@
+- args:
+    relationship: identificaion
+    table:
+      name: lea_characteristics
+      schema: crdc
+  type: drop_relationship
