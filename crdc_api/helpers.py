@@ -107,3 +107,10 @@ def start_postgres_container():
 def start_graphql_engine_container():
     pretty_print("Started Graphql Engine Docker Container")
     subprocess.call(['docker-compose', 'up', '-d', 'graphql-engine'])
+
+
+def module_to_view_name(module, prefix, translations):
+    translated_module = translations['tables']['modules'].get(module, module)
+    tableish = make_table_name(translated_module)
+
+    return viewnameify(tableish, prefix, translations)

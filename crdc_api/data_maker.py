@@ -7,6 +7,7 @@ from helpers import (
     get_layout_file,
     get_data_file,
     make_table_row_map,
+    module_to_view_name
 )
 
 from utils import (
@@ -110,14 +111,16 @@ class DataMaker:
 
     def make_migrations(self):
         curr_table_name = ""
-        migration_up_script = ""
-        # migration_down_script = ""
+        track_view_migration_script = ""
+        relationship_migration_script = ""
 
         migration_dir = f"{OUTPUT_DIR}migrations/"
         create_directory(migration_dir)
 
-        up_migration = open(
+        track_view_migration_file = open(
             f"{migration_dir}1__add_all_view_crdc.up.yaml", 'w')
+        relationship_migration_file = open(
+            f"{migration_dir}2__create_all_relationships.up.yaml", 'w')
 
         for row in self.df_layout.itertuples():
             if(row.table_name != curr_table_name):
@@ -126,9 +129,49 @@ class DataMaker:
                 view_name = viewnameify(
                     curr_table_name, self.table_prefix, self.translations)
 
-                migration_up_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
-                # migration_down_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
+                track_view_migration_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
 
-                up_migration.write(migration_up_script)
+                relationship_migration_script = self.make_relationship_migration(
+                    row.module, view_name)
 
-        up_migration.close()
+                track_view_migration_file.write(track_view_migration_script)
+                relationship_migration_file.write(
+                    relationship_migration_script)
+
+        track_view_migration_file.close()
+        relationship_migration_file.close()
+
+    def make_relationship_migration(self, module, view_name):
+        # print('make_relationship', module, view_name)
+
+        relationships = self.translations['relationships'].get(module, None)
+
+        if((not relationships or not len(relationships))):
+            return ""
+
+        script = ""
+        for relationship in relationships:
+            # print('translation', translation)
+            remove_view_name = module_to_view_name(
+                relationship["module"], self.table_prefix, self.translations)
+
+            # viewnameify(
+            #     relationship["module"], self.table_prefix, self.translations)
+
+            script += (
+                f"""- args:
+    name: {relationship["name"]}
+    table:
+      name: {view_name}
+      schema: {DB_SCHEMA}
+    using:
+      manual_configuration:
+        column_mapping:
+          {relationship["key"]}: {relationship["key"]}
+        remote_table:
+          name: {remove_view_name}
+          schema: {DB_SCHEMA}
+  type: create_object_relationship
+""")
+
+        return script

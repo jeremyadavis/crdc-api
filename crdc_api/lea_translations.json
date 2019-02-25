@@ -40,5 +40,45 @@
       "DISTED": "",
       "GED": ""
     }
+  },
+  "relationships": {
+    "Identification": [
+      {
+        "name": "characteristics",
+        "module": "LEA Characteristics",
+        "key": "leaid"
+      },
+      {
+        "name": "ged",
+        "module": "High School Equivalency (GED)",
+        "key": "leaid"
+      },
+      {
+        "name": "distance_education",
+        "module": "Distance Education",
+        "key": "leaid"
+      }
+    ],
+    "LEA Characteristics": [
+      {
+        "name": "identification",
+        "module": "Identification",
+        "key": "leaid"
+      }
+    ],
+    "High School Equivalency (GED)": [
+      {
+        "name": "identification",
+        "module": "Identification",
+        "key": "leaid"
+      }
+    ],
+    "Distance Education": [
+      {
+        "name": "identification",
+        "module": "Identification",
+        "key": "leaid"
+      }
+    ]
   }
 }
