@@ -5,7 +5,8 @@ from utils import (
     fetch_file,
     get_filename_from_url,
     unzip,
-    rename_files
+    rename_files,
+    pretty_print
 )
 from constants import (
     CRDC_DATA_URL,
@@ -37,7 +38,7 @@ def extracted_files_exists(dir):
 
 
 def setup_data():
-    print("--- STEP 1: SETUP DATA")
+    pretty_print("SETUP DATA")
     extract_directory = f"{INPUT_DIR}extracts/"
 
     """
@@ -48,28 +49,28 @@ def setup_data():
     Remove extra directory and files
     """
     if (needed_files_exists()):
-        print("    * Needed Files Already Exist")
+        pretty_print("Needed Files Already Exist", True)
     else:
         if (extracted_files_exists(extract_directory)):
-            print("    * Extract Already Exist")
+            pretty_print("Extract Already Exist", True)
         else:
             create_directory(extract_directory)
-            print("    * Fetching CRDC Data From Public Website (34MB)")
+            pretty_print("Fetching CRDC Data From Public Website (34MB)", True)
             zip_file_name = get_filename_from_url(CRDC_DATA_URL)
             zip_file_name = fetch_file(
                 CRDC_DATA_URL, extract_directory, zip_file_name)
 
-            print("    * Extracting Zip At ",
-                  extract_directory + zip_file_name)
+            pretty_print("Extracting Zip At ", True,
+                         extract_directory + zip_file_name)
             unzip(extract_directory+zip_file_name, extract_directory)
 
-        print("    * Moving Files In Place")
+        pretty_print("Moving Files In Place", True)
         formatted_files_list = list(map(lambda x: {
                                     "src_path": x["extracted_path"], "dest_path": x["needed_file_name"]}, CRDC_FILES))
         rename_files(formatted_files_list, extract_directory, INPUT_DIR)
 
-        print("    * Cleaning Up")
+        pretty_print("Cleaning Up", True)
         remove_directory(extract_directory)
 
     # create_directory(OUTPUT_DIR, True)
-    print("    * Setup Data Complete")
+    # pretty_print("Setup Data Complete", True)

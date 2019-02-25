@@ -9,6 +9,7 @@ from helpers import reset_containers, start_postgres_container, start_graphql_en
 from setup_data import setup_data
 from setup_db import setup_db
 from data_maker import DataMaker
+from utils import pretty_print
 
 
 def main():
@@ -21,7 +22,7 @@ def main():
     setup_data()
     engine = setup_db()
 
-    print("--- STEP 3: CREATE LEA ARTIFACTS")
+    pretty_print("CREATE LEA ARTIFACTS")
     lea_config = {
         'layout_file': CRDCFile.LeaLayout.value,
         'data_file': CRDCFile.LeaData.value,
@@ -52,8 +53,8 @@ def main():
 
     start_graphql_engine_container()
 
-    print(f"Program Completed in {datetime.utcnow() - start}\n")
-    print("=====================================\n\n\n")
+    print("\n\n=====================================\n")
+    print(f"Program Completed in {datetime.utcnow() - start}\n\n\n")
 
 
 if __name__ == '__main__':

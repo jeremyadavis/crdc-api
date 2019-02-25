@@ -102,3 +102,13 @@ def viewnameify(name, prefix, translations):
 def execute_sql(engine, statement):
     with engine.connect() as conn:
         conn.execute(text(statement))
+
+
+def pretty_print(text, is_bullet=False):
+
+    if(not is_bullet):
+        output = f"\n--- {text.upper()}"
+    else:
+        output = f"    * {text}"
+
+    print(output)

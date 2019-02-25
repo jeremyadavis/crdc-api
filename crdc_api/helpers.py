@@ -11,7 +11,8 @@ from utils import (
     make_table_name,
     create_directory,
     tablenamify,
-    viewnameify
+    viewnameify,
+    pretty_print
 )
 
 
@@ -75,6 +76,7 @@ def make_table_row_map(df, index, prefix, translations):
 
 
 def reset_containers():
+    pretty_print("Removing Docker Containers and Volumes")
     subprocess.call(['docker-compose', 'down'])
 
     # out = subprocess.check_output(['echo', 'ehlo'])
@@ -96,10 +98,12 @@ def reset_containers():
 
 
 def start_postgres_container():
+    pretty_print("Started Postgres Docker Container")
     subprocess.call(['docker-compose', 'up', '-d', 'postgres'])
 
     time.sleep(5)
 
 
 def start_graphql_engine_container():
+    pretty_print("Started Graphql Engine Docker Container")
     subprocess.call(['docker-compose', 'up', '-d', 'graphql-engine'])

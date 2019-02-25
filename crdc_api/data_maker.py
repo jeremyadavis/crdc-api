@@ -13,7 +13,8 @@ from utils import (
     tablenamify,
     viewnameify,
     execute_sql,
-    create_directory
+    create_directory,
+    pretty_print
 )
 
 from translator import make_meaningful_name
@@ -40,7 +41,7 @@ class DataMaker:
         )
 
         for table_name, df_columns in table_map.items():
-            print(f"    * Making Table {table_name}")
+            pretty_print(f"Making Table {table_name}", True)
             df_filtered = self.df_data.loc[:, df_columns]
 
             # CSV OUTPUT
@@ -90,7 +91,7 @@ class DataMaker:
     def view_sql_start(self, view_name):
         view_name = viewnameify(
             view_name, self.table_prefix, self.translations)
-        print(f"    * Making View {view_name}")
+        pretty_print(f"Making View {view_name}", True)
         return (
             f"CREATE OR REPLACE VIEW {DB_SCHEMA}.\"{view_name}\"\n\tAS\n"
             "\tSELECT\n"

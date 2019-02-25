@@ -5,13 +5,14 @@ from constants import (
     DB_SCHEMA
 )
 from sqlalchemy.sql import exists, select
+from utils import pretty_print
 
 
 def connect_to_db():
     try:
         engine = create_engine(DATABASE_URL)
         engine.connect()
-
+        pretty_print("Connected to DB", True)
         return engine
     except Exception as e:
         print("ERROR! Unable to Connect to database with", DATABASE_URL)
@@ -29,12 +30,12 @@ def setup_schema(engine):
 
         conn.execute(DropSchema(DB_SCHEMA, None, True))
         conn.execute(CreateSchema(DB_SCHEMA))
+        pretty_print(f"Created Schema {DB_SCHEMA}", True)
 
 
 def setup_db():
-    print("--- STEP 2: SETUP DATABASE")
+    pretty_print("SETUP DATABASE")
     engine = connect_to_db()
     setup_schema(engine)
 
-    print("    * SETUP DATABASE COMPLETE")
     return engine
