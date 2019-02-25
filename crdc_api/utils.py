@@ -92,9 +92,11 @@ def tablenamify(name, prefix):
     # return prefixify(name + "_table", prefix)
 
 
-def viewnameify(name, prefix):
-    return f"{prefix + name}" if prefix else name
-    # return prefixify(name, prefix)
+def viewnameify(name, prefix, translations):
+    if (name in translations['tables']['noprefix']):
+        return name
+
+    return f"{prefix + name}"
 
 
 def execute_sql(engine, statement):

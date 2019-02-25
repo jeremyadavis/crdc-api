@@ -29,10 +29,10 @@ CRDC_FILES = [
         "extracted_path": CRDC_DATA_FOLDER+"CRDC 2015-16 School Data.csv"}
 ]
 
-DATABASE_URL = "postgresql://postgres:@localhost:5431/postgres"
+DATABASE_URL = "postgresql://postgres:@localhost:5432/postgres"
 
 INPUT_DIR = "./data/"
-OUTPUT_DIR = "./data/csv/"
+OUTPUT_DIR = "./data/"
 
 
 class OutputOption(Enum):

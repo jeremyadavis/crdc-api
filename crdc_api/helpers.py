@@ -1,4 +1,6 @@
 import pandas
+import subprocess
+import time
 from constants import (
     INPUT_DIR,
     OUTPUT_DIR,
@@ -70,3 +72,34 @@ def make_table_row_map(df, index, prefix, translations):
             table_row_map[curr_table_name].append(row.column_name)
 
     return table_row_map
+
+
+def reset_containers():
+    subprocess.call(['docker-compose', 'down'])
+
+    # out = subprocess.check_output(['echo', 'ehlo'])
+    containers = subprocess.check_output(
+        ['docker', 'ps', '-a', '-q'], universal_newlines=True)
+
+    if(len(containers)):
+        # print('removing containers', containers)
+        subprocess.call(['docker', 'rm', '-f', containers])
+
+    volumes = subprocess.check_output(
+        ['docker', 'volume', 'ls', '-q'], universal_newlines=True).strip()
+
+    if(len(volumes)):
+        # print('removing volumes', volumes)
+        subprocess.call(['docker', 'volume', 'rm', volumes])
+
+    time.sleep(5)
+
+
+def start_postgres_container():
+    subprocess.call(['docker-compose', 'up', '-d', 'postgres'])
+
+    time.sleep(5)
+
+
+def start_graphql_engine_container():
+    subprocess.call(['docker-compose', 'up', '-d', 'graphql-engine'])

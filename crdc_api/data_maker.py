@@ -12,7 +12,8 @@ from helpers import (
 from utils import (
     tablenamify,
     viewnameify,
-    execute_sql
+    execute_sql,
+    create_directory
 )
 
 from translator import make_meaningful_name
@@ -43,7 +44,7 @@ class DataMaker:
             df_filtered = self.df_data.loc[:, df_columns]
 
             # CSV OUTPUT
-            # df_filtered.to_csv(OUTPUT_DIR + table_name + ".csv")
+            # df_filtered.to_csv(OUTPUT_DIR + "csv/" + table_name + ".csv")
 
             # DATABASE OUTPUT
             # if table_name != 'sch_enrollment_table':
@@ -87,9 +88,8 @@ class DataMaker:
                 execute_sql(self.engine, view_statement)
 
     def view_sql_start(self, view_name):
-        prefix_option = self.table_prefix if not view_name in self.translations[
-            'tables']['noprefix'] else None
-        view_name = viewnameify(view_name, prefix_option)
+        view_name = viewnameify(
+            view_name, self.table_prefix, self.translations)
         print(f"    * Making View {view_name}")
         return (
             f"CREATE OR REPLACE VIEW {DB_SCHEMA}.\"{view_name}\"\n\tAS\n"
@@ -106,3 +106,28 @@ class DataMaker:
         prefix_option = self.table_prefix if not table_name in self.translations[
             'tables']['noprefix'] else None
         return f"\tFROM\n\t\t{DB_SCHEMA}.\"{tablenamify(table_name, prefix_option)}\";\n\n"
+
+    def make_migrations(self):
+        curr_table_name = ""
+        migration_up_script = ""
+        # migration_down_script = ""
+
+        migration_dir = f"{OUTPUT_DIR}migrations/"
+        create_directory(migration_dir)
+
+        up_migration = open(
+            f"{migration_dir}1__add_all_view_crdc.up.yaml", 'w')
+
+        for row in self.df_layout.itertuples():
+            if(row.table_name != curr_table_name):
+                curr_table_name = row.next_table_name
+
+                view_name = viewnameify(
+                    curr_table_name, self.table_prefix, self.translations)
+
+                migration_up_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
+                # migration_down_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
+
+                up_migration.write(migration_up_script)
+
+        up_migration.close()
