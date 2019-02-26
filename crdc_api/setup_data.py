@@ -13,7 +13,8 @@ from constants import (
     CRDC_DATA_FOLDER,
     CRDC_FILES,
     INPUT_DIR,
-    OUTPUT_DIR
+    OUTPUT_DIR,
+    MIGRATION_DIR
 )
 
 
@@ -73,4 +74,6 @@ def setup_data():
         remove_directory(extract_directory)
 
     # create_directory(OUTPUT_DIR, True)
+
+    create_directory(MIGRATION_DIR, True)
     # pretty_print("Setup Data Complete", True)

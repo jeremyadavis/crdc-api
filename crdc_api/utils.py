@@ -112,3 +112,7 @@ def pretty_print(text, is_bullet=False):
         output = f"    * {text}"
 
     print(output)
+
+
+def get_num_files_in_dir(dir):
+    return len([name for name in os.listdir(dir)])

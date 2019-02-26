@@ -33,6 +33,7 @@ DATABASE_URL = "postgresql://postgres:@localhost:5432/postgres"
 
 INPUT_DIR = "./data/"
 OUTPUT_DIR = "./data/"
+MIGRATION_DIR = f"{OUTPUT_DIR}migrations/"
 
 
 class OutputOption(Enum):

@@ -1,5 +1,6 @@
 from constants import (
     OUTPUT_DIR,
+    MIGRATION_DIR,
     DB_SCHEMA
 )
 
@@ -15,7 +16,8 @@ from utils import (
     viewnameify,
     execute_sql,
     create_directory,
-    pretty_print
+    pretty_print,
+    get_num_files_in_dir
 )
 
 from translator import make_meaningful_name
@@ -110,17 +112,21 @@ class DataMaker:
         return f"\tFROM\n\t\t{DB_SCHEMA}.\"{tablenamify(table_name, prefix_option)}\";\n\n"
 
     def make_migrations(self):
+
+        self.make_migration_file(
+            'create_all_views', self.make_view_migration_markup)
+        self.make_migration_file(
+            'create_all_relationships', self.make_relationship_migration_markup)
+
+    def make_migration_file(self, file_name, markup_method):
+        migration_version = get_num_files_in_dir(MIGRATION_DIR) + 1
+        migration_file_name = f"{migration_version}__{self.table_prefix}{file_name}.up.yaml"
+
+        pretty_print(f"Making Migration File {migration_file_name}", True)
         curr_table_name = ""
-        track_view_migration_script = ""
-        relationship_migration_script = ""
+        migration_script = ""
 
-        migration_dir = f"{OUTPUT_DIR}migrations/"
-        create_directory(migration_dir)
-
-        track_view_migration_file = open(
-            f"{migration_dir}1__add_all_view_crdc.up.yaml", 'w')
-        relationship_migration_file = open(
-            f"{migration_dir}2__create_all_relationships.up.yaml", 'w')
+        migration_file = open(MIGRATION_DIR + migration_file_name, 'w')
 
         for row in self.df_layout.itertuples():
             if(row.table_name != curr_table_name):
@@ -129,22 +135,24 @@ class DataMaker:
                 view_name = viewnameify(
                     curr_table_name, self.table_prefix, self.translations)
 
-                track_view_migration_script = f"- args:\n    name: {view_name}\n    schema: {DB_SCHEMA}\n  type: add_existing_table_or_view\n"
+                migration_script = markup_method({
+                    "view_name": view_name,
+                    "schema": DB_SCHEMA,
+                    "module": row.module,
+                })
 
-                relationship_migration_script = self.make_relationship_migration(
-                    row.module, view_name)
+                migration_file.write(migration_script)
 
-                track_view_migration_file.write(track_view_migration_script)
-                relationship_migration_file.write(
-                    relationship_migration_script)
+        migration_file.close()
 
-        track_view_migration_file.close()
-        relationship_migration_file.close()
+    def make_view_migration_markup(self, args):
+        return f"- args:\n    name: {args['view_name']}\n    schema: {args['schema']}\n  type: add_existing_table_or_view\n"
 
-    def make_relationship_migration(self, module, view_name):
+    def make_relationship_migration_markup(self, args):
         # print('make_relationship', module, view_name)
 
-        relationships = self.translations['relationships'].get(module, None)
+        relationships = self.translations['relationships'].get(
+            args['module'], None)
 
         if((not relationships or not len(relationships))):
             return ""
@@ -158,19 +166,20 @@ class DataMaker:
             # viewnameify(
             #     relationship["module"], self.table_prefix, self.translations)
 
+            # MAKES YAML FILE. INDENTATIONS MATTERS!!!
             script += (
                 f"""- args:
-    name: {relationship["name"]}
+    name: {relationship['name']}
     table:
-      name: {view_name}
-      schema: {DB_SCHEMA}
+      name: {args['view_name']}
+      schema: {args['schema']}
     using:
       manual_configuration:
         column_mapping:
-          {relationship["key"]}: {relationship["key"]}
+          {self.data_file_index}: {self.data_file_index}
         remote_table:
           name: {remove_view_name}
-          schema: {DB_SCHEMA}
+          schema: {args['schema']}
   type: create_object_relationship
 """)
 

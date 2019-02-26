@@ -150,5 +150,129 @@
       "GTENR": "",
       "ENR": ""
     }
+  },
+  "relationships": {
+    "Identification": [
+      {
+        "name": "characteristics",
+        "module": "School Characteristics"
+      },
+      {
+        "name": "enrollment",
+        "module": "Enrollment"
+      },
+      {
+        "name": "gifted",
+        "module": "Gifted and Talented"
+      },
+      {
+        "name": "dual_enrollment",
+        "module": "Dual Enrollment"
+      },
+      {
+        "name": "algebrai",
+        "module": "Algebra I"
+      },
+      {
+        "name": "geometry",
+        "module": "Geometry"
+      },
+      {
+        "name": "algebraii",
+        "module": "Algebra II"
+      },
+      {
+        "name": "calculus",
+        "module": "Calculus"
+      },
+      {
+        "name": "advanced_mathematics",
+        "module": "Advanced Mathematics"
+      },
+      {
+        "name": "biology",
+        "module": "Biology"
+      },
+      {
+        "name": "chemistry",
+        "module": "Chemistry"
+      },
+      {
+        "name": "physics",
+        "module": "Physics"
+      },
+      {
+        "name": "ss_classes",
+        "module": "Single-sex Classes"
+      },
+      {
+        "name": "ap",
+        "module": "Advanced Placement"
+      },
+      {
+        "name": "international_baccalaureate",
+        "module": "International Baccalaureate"
+      },
+      {
+        "name": "sat_act",
+        "module": "SAT and ACT Exams"
+      },
+      {
+        "name": "corporal_punishment",
+        "module": "Corporal Punishment"
+      },
+      {
+        "name": "suspensions",
+        "module": "Suspensions"
+      },
+      {
+        "name": "expulsions",
+        "module": "Expulsions"
+      },
+      {
+        "name": "transfers",
+        "module": "Transfers"
+      },
+      {
+        "name": "referrals_arrests",
+        "module": "Referrals and Arrests"
+      },
+      {
+        "name": "offenses",
+        "module": "Offenses"
+      },
+      {
+        "name": "restraint_seclusion",
+        "module": "Restraint and Seclusion"
+      },
+      {
+        "name": "harassment_bullying",
+        "module": "Harassment and Bullying"
+      },
+      {
+        "name": "chronic_absenteeism",
+        "module": "Chronic Absenteeism"
+      },
+      {
+        "name": "retention",
+        "module": "Retention"
+      },
+      {
+        "name": "ss_athletics",
+        "module": "Single-Sex Athletics"
+      },
+      {
+        "name": "expenditures",
+        "module": "School Expenditures"
+      },
+      {
+        "name": "support",
+        "module": "School Support"
+      },
+      {
+        "name": "justice_facility",
+        "module": "Justice Facility"
+      }
+    ]
   }
 }

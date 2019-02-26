@@ -37,19 +37,20 @@ def main():
     lea_maker.make_views()
     lea_maker.make_migrations()
 
-    # print("--- STEP 4: CREATE SCHOOL ARTIFACTS")
-    # school_config = {
-    #     'layout_file': CRDCFile.SchoolLayout.value,
-    #     'data_file': CRDCFile.SchoolData.value,
-    #     'data_file_index': 'COMBOKEY',
-    #     'table_prefix': 'sch_'
-    # }
-    # school_translations = open(
-    #     './crdc_api/school_translations.json')
-    # school_maker = DataMaker(engine, school_config,
-    #                          json.load(school_translations))
-    # school_maker.make_tables_and_files()
-    # school_maker.make_views()
+    pretty_print("CREATE SCHOOL ARTIFACTS")
+    school_config = {
+        'layout_file': CRDCFile.SchoolLayout.value,
+        'data_file': CRDCFile.SchoolData.value,
+        'data_file_index': 'COMBOKEY',
+        'table_prefix': 'sch_'
+    }
+    school_translations = open(
+        './crdc_api/school_translations.json')
+    school_maker = DataMaker(engine, school_config,
+                             json.load(school_translations))
+    school_maker.make_tables_and_files()
+    school_maker.make_views()
+    school_maker.make_migrations()
 
     start_graphql_engine_container()
 

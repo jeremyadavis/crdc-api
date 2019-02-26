@@ -45,39 +45,33 @@
     "Identification": [
       {
         "name": "characteristics",
-        "module": "LEA Characteristics",
-        "key": "leaid"
+        "module": "LEA Characteristics"
       },
       {
         "name": "ged",
-        "module": "High School Equivalency (GED)",
-        "key": "leaid"
+        "module": "High School Equivalency (GED)"
       },
       {
         "name": "distance_education",
-        "module": "Distance Education",
-        "key": "leaid"
+        "module": "Distance Education"
       }
     ],
     "LEA Characteristics": [
       {
         "name": "identification",
-        "module": "Identification",
-        "key": "leaid"
+        "module": "Identification"
       }
     ],
     "High School Equivalency (GED)": [
       {
         "name": "identification",
-        "module": "Identification",
-        "key": "leaid"
+        "module": "Identification"
       }
     ],
     "Distance Education": [
       {
         "name": "identification",
-        "module": "Identification",
-        "key": "leaid"
+        "module": "Identification"
       }
     ]
   }
