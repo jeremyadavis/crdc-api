@@ -80,6 +80,10 @@ def make_table_name(orig): return orig.replace(
     ' ', '_').replace('-', '_').lower()
 
 
+def str2bool(v):
+    return str(v).lower() in ("yes", "true", "t", "1")
+
+
 def prefixify(name, prefix):
     # if(not name.startswith(prefix)):
     return prefix + name
@@ -116,3 +120,7 @@ def pretty_print(text, is_bullet=False):
 
 def get_num_files_in_dir(dir):
     return len([name for name in os.listdir(dir)])
+
+
+def clean_and_join_list(mylist, separator="_"):
+    return separator.join([x.lower() for x in mylist if len(x)])

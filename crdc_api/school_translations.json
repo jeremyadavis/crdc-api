@@ -14,7 +14,7 @@
       "TOT": "total"
     },
     "module": {
-      "AlgebraI": {
+      "Algebra I": {
         "MATHCLASSES": "CLASSES_HS",
         "MATHCERT": "CERTIFIED_CLASSES_HS"
       },
@@ -22,7 +22,7 @@
         "MATHCLASSES": "CLASSES_HS",
         "MATHCERT": "CERTIFIED_CLASSES_HS"
       },
-      "RestraintandSeclusion": {
+      "Restraint and Seclusion": {
         "PHYS": "PHYSICAL"
       }
     },

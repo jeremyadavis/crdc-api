@@ -12,34 +12,41 @@ from utils import (
     create_directory,
     tablenamify,
     viewnameify,
-    pretty_print
+    pretty_print,
 )
 
 
-def get_layout_file(filename, translations):
+from translator import (
+    module_to_db_object,
+    make_view_name
+)
+
+
+def get_layout_file(filename, config):
     df = pandas.read_csv(INPUT_DIR+filename,
                          encoding='LATIN-1',
                          header=0,
                          names=['order', 'excel_column',
                                 'column_name', 'description', 'module']
                          )
-
-    translated_modules = df['module'].map(
-        lambda m: translations['tables']['modules'].get(m, m))
-
-    # translated_modules.map(lambda m: print(
-    #     'test', m, m in translations['tables']['noprefix']))
-    # print('test', translated_modules)
-
-    df['table_name'] = translated_modules.map(make_table_name)
-    df['next_table_name'] = df['table_name'].shift(-1)
+    df['table_name'] = df['module'].apply(
+        module_to_db_object, args=(config, "_table",))
+    df['view_name'] = df['module'].apply(
+        module_to_db_object, args=(config, ""))
 
     df['column_name'] = df['column_name'].map(lambda x: x.lower())
+    df['view_column_name'] = df.apply(
+        make_view_name, axis=1, args=(config,))
+
+    df['is_first_column'] = df['table_name'] != df['table_name'].shift(1)
+    df['is_last_column'] = df['table_name'] != df['table_name'].shift(-1)
+
+    # print(df.head(200))
 
     return df
 
 
-def get_data_file(filename, index_col, num_rows=None):
+def get_data_file(filename, config, num_rows=None):
     if not(num_rows):
         print("WARNING! No Row Limiting for LEA_DATA")
 
@@ -50,26 +57,31 @@ def get_data_file(filename, index_col, num_rows=None):
                          )
 
     df.columns = df.columns.map(lambda x: x.lower())
+    index_col = get_table_primary_key(config)
     df.set_index(index_col, inplace=True)
 
     return df
 
 
-def make_table_row_map(df, index, prefix, translations):
+def get_table_primary_key(config):
+    return config['tables']['primary_key']
+
+
+def get_db_schema(config):
+    return config['schema']
+
+
+def make_table_row_map(df_layout, primary_key):
     curr_table_name = ""
     table_row_map = {}
 
-    for row in df.itertuples():
-        # print('row.table_name', row.table_name)
-        prefix_option = prefix if row.table_name not in translations[
-            'tables']['noprefix'] else None
-        if(tablenamify(row.table_name, prefix_option) != curr_table_name):
-            prefix_option = prefix if row.next_table_name not in translations[
-                'tables']['noprefix'] else None
-            curr_table_name = tablenamify(row.next_table_name, prefix_option)
+    for row in df_layout.itertuples():
+        if(row.is_first_column):
+            curr_table_name = row.table_name
             table_row_map[curr_table_name] = []
 
-        if row.column_name != index:
+        # Primary Key is used as index for df_data, so it will be auto included and set to first position
+        if row.column_name != primary_key:
             table_row_map[curr_table_name].append(row.column_name)
 
     return table_row_map

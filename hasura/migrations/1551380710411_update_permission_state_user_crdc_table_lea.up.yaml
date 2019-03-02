@@ -1,0 +1,21 @@
+- args:
+    permission:
+      allow_aggregations: true
+      columns:
+      - address
+      - city
+      - contains_jj_facility
+      - leaid
+      - name
+      - state
+      - state_name
+      - zip
+      filter:
+        state:
+          _eq: X-Hasura-State
+      limit: 1000
+    role: state_user
+    table:
+      name: lea
+      schema: crdc
+  type: create_select_permission

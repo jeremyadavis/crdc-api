@@ -1,8 +1,13 @@
 import json
 
+from utils import (str2bool, clean_and_join_list)
 
-def process_group(part, module):
-    group_switcher = {
+
+GLOBAL_TRANSLATIONS = {
+    "first": {
+        "TOT": "TOTAL"
+    },
+    "second_to_last": {
         "HI": "HISPANIC",
         "AM": "AMERICAN_INDIAN",
         "AS": "ASIAN",
@@ -10,64 +15,79 @@ def process_group(part, module):
         "BL": "BLACK",
         "WH": "WHITE",
         "TR": "MULTIRACIAL"
+    },
+    "last": {
+        "M": "MALE",
+        "F": "FEMALE",
+        "IND": "INDICATOR",
+        "WODIS": "WITHOUT_DISABILITY",
+        "TOT": "TOTAL"
     }
+}
 
-    return group_switcher.get(part, part)
-
-
-def process_suffix(part, module):
-    result = part
-
-    if(part == 'M'):
-        result = 'Male'
-    elif(part == 'F'):
-        result = 'Female'
-    elif(part == 'IND'):
-        result = 'Indicator'
-    elif(part == 'WODIS'):
-        result = 'WITHOUT_DISABILITY'
-    elif(part == 'TOT'):
-        result = 'TOTAL'
-    return result
+POSTPROCESSING_CLEANUP = {
+    "504": "prog504"
+}
 
 
-def make_meaningful_name(orig, module, translations):
-    # print("\n", orig)
-    # print('make_meaningful_name', module.replace(' ', ''))
+def translate_by_part_position(part, position, part_config):
+    # print("translate_by_part_position", part, position)
+    return part_config[position].get(
+        part, GLOBAL_TRANSLATIONS[position].get(part, part))
 
-    result_split = orig.upper().split("_")
 
-    for index, part in enumerate(result_split):
+def make_view_name(row, config):
+    column_config = config['columns']
+    part_config = column_config["part_positions"]
+    modules_config = column_config['modules']
+    general_config = column_config['general']
+    column_split = row.column_name.upper().split("_")
+
+    for index, part in enumerate(column_split):
         # print(f"Processing {part} at index {index}")
 
-        processed_part = part
-        # --- Prefix
+        # --- First Position
         if(index == 0):
-            processed_part = translations['columns']['prefix'].get(part, part)
-            # processed_part = process_prefix(processed_part, module)
+            part = translate_by_part_position(part, "first", part_config)
 
-        # --- Second to Last
-        elif(len(result_split) - 2 == index and processed_part in ["HI", "AM", "AS", "HP", "BL", "WH", "TR"]):
-            processed_part = process_group(processed_part, module)
+        # --- Second to Last Position
+        elif(len(column_split) - 2 == index):
+            part = translate_by_part_position(
+                part, "second_to_last", part_config)
 
-        # --- Suffix
-        elif(len(result_split) - 1 == index):
-            processed_part = process_suffix(processed_part, module)
+        # --- Last Position
+        elif(len(column_split) - 1 == index):
+            part = translate_by_part_position(part, "last", part_config)
 
-        # result_split[index] = process_by_module(processed_part, module)
-        module_switcher = translations['columns']['module'].get(
-            module.replace(' ', ''), {})
-        processed_part = module_switcher.get(processed_part, processed_part)
+        # --- Config overrides by module
+        module_switcher = modules_config.get(row.module, {})
+        part = module_switcher.get(part, part)
 
-        result_split[index] = translations['columns']['general'].get(
-            processed_part, processed_part)
+        # --- General Config overrides
+        column_split[index] = general_config.get(part, part)
 
-    cleaned_result = list(filter(lambda x: len(x) > 0, result_split))
-    cleaned_result = list(map(lambda x: x.lower(), cleaned_result))
-    meaningful_name = "_".join(cleaned_result)
+    view_name = clean_and_join_list(column_split)
 
-    if(meaningful_name.startswith('504')):
-        meaningful_name = meaningful_name.replace('504', 'prog504')
+    # PostProcess to make invalid view_names valid
+    for key, value in POSTPROCESSING_CLEANUP.items():
+        if(view_name.startswith(key)):
+            view_name = view_name.replace(key, value, 1)
 
-    # print(meaningful_name)
-    return meaningful_name
+    return view_name
+
+
+def module_to_db_object(module, config, suffix):
+    table_config = config['tables']
+
+    t_mod = table_config['module_translations'].get(module, module.replace(
+        ' ', '_').replace('-', '_').lower())
+
+    table_name = ""
+    if(isinstance(t_mod, dict)):
+        table_name = table_config['prefix'] + \
+            t_mod['value'] if str2bool(
+                t_mod['should_prefix']) else t_mod['value']
+    else:
+        table_name = table_config['prefix'] + t_mod
+
+    return table_name + suffix

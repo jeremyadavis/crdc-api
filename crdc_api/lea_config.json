@@ -1,18 +1,33 @@
 {
+  "schema": "crdc",
   "tables": {
-    "modules": {
-      "Identification": "lea",
-      "LEA Characteristics": "characteristics",
-      "High School Equivalency (GED)": "ged"
-    },
-    "noprefix": ["lea"]
+    "prefix": "lea_",
+    "primary_key": "leaid",
+    "module_translations": {
+      "Identification": {
+        "value": "lea",
+        "should_prefix": "false"
+      },
+      "LEA Characteristics": {
+        "value": "characteristics",
+        "should_prefix": "true"
+      },
+      "High School Equivalency (GED)": {
+        "value": "ged",
+        "should_prefix": "true"
+      }
+    }
   },
   "columns": {
-    "prefix": {
-      "LEA": "",
-      "TOT": "total"
+    "part_positions": {
+      "first": {
+        "LEA": "",
+        "TOT": "total"
+      },
+      "second_to_last": {},
+      "last": {}
     },
-    "module": {},
+    "modules": {},
     "general": {
       "CJJ": "CONTAINS_JJ_FACILITY",
       "ENR": "ENROLLMENT",
