@@ -21,8 +21,7 @@
   "columns": {
     "part_positions": {
       "first": {
-        "LEA": "",
-        "TOT": "total"
+        "LEA": ""
       },
       "second_to_last": {},
       "last": {}

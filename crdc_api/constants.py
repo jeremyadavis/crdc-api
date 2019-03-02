@@ -1,7 +1,7 @@
 from enum import Enum
 
 DB_SCHEMA = "crdc"
-TABLE_PREFIX = "crdc1516_"
+DATABASE_URL = "postgresql://postgres:@localhost:5432/postgres"
 
 CRDC_DATA_URL = "https://www2.ed.gov/about/offices/list/ocr/docs/2015-16-crdc-data.zip"
 CRDC_DATA_FOLDER = "Data Files and Layouts/"
@@ -29,14 +29,6 @@ CRDC_FILES = [
         "extracted_path": CRDC_DATA_FOLDER+"CRDC 2015-16 School Data.csv"}
 ]
 
-DATABASE_URL = "postgresql://postgres:@localhost:5432/postgres"
-
 INPUT_DIR = "./data/"
 OUTPUT_DIR = "./data/"
 MIGRATION_DIR = f"{OUTPUT_DIR}migrations/"
-
-
-class OutputOption(Enum):
-    ALL = "ALL"
-    CSV = "CSV"
-    DATABASE = "DATABASE"

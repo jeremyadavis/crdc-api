@@ -1,19 +1,36 @@
 {
+  "schema": "crdc",
   "tables": {
-    "modules": {
-      "Identification": "school",
-      "School Characteristics": "characteristics",
-      "School Expenditures": "expenditures",
-      "School Support": "support"
-    },
-    "noprefix": ["school"]
+    "prefix": "sch_",
+    "primary_key": "combokey",
+    "module_translations": {
+      "Identification": {
+        "value": "school",
+        "should_prefix": "false"
+      },
+      "School Characteristics": {
+        "value": "characteristics",
+        "should_prefix": "true"
+      },
+      "School Expenditures": {
+        "value": "expenditures",
+        "should_prefix": "true"
+      },
+      "School Support": {
+        "value": "support",
+        "should_prefix": "true"
+      }
+    }
   },
   "columns": {
-    "prefix": {
-      "SCH": "",
-      "TOT": "total"
+    "part_positions": {
+      "first": {
+        "SCH": ""
+      },
+      "second_to_last": {},
+      "last": {}
     },
-    "module": {
+    "modules": {
       "Algebra I": {
         "MATHCLASSES": "CLASSES_HS",
         "MATHCERT": "CERTIFIED_CLASSES_HS"
