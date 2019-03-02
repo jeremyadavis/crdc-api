@@ -31,7 +31,7 @@ def main():
     lea_maker = DataMaker(engine, lea_files, lea_config)
     lea_maker.make_tables_and_files()
     lea_maker.make_views()
-    # lea_maker.make_migrations()
+    lea_maker.make_migrations()
 
     # pretty_print("CREATE SCHOOL ARTIFACTS")
     # school_config = {
