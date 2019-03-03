@@ -1,3 +1,4 @@
+import yaml
 
 from constants import (
     OUTPUT_DIR,
@@ -91,112 +92,124 @@ class DataMaker:
     def make_migrations(self):
 
         self.make_migration_file(
-            'create_all_views', self.make_view_migration_markup)
+            'create_all_views', self.make_view_migration_yaml)
         self.make_migration_file(
-            'create_all_relationships', self.make_relationship_migration_markup)
-
-        self.make_access_role_migrations()
+            'create_all_relationships', self.make_relationship_migration_yaml)
+        self.make_migration_file(
+            'access_roles', self.make_role_access_yaml)
 
     def make_migration_file(self, file_name, markup_method):
         migration_version = get_num_files_in_dir(MIGRATION_DIR) + 1
         migration_file_name = f"{migration_version}__{self.config['tables']['prefix']}{file_name}.up.yaml"
-
         pretty_print(f"Making Migration File {migration_file_name}", True)
 
-        migration_script = ""
-        migration_file = open(MIGRATION_DIR + migration_file_name, 'w')
+        yaml_data = []
 
         for row in self.df_layout.itertuples():
             if(row.is_first_column):
-                migration_script = markup_method({
-                    "view_name": row.view_name,
-                    "schema": self.db_schema,
-                    "module": row.module,
-                })
+                columns = [self.primary_key]
 
-                migration_file.write(migration_script)
-
-        migration_file.close()
-
-    def make_view_migration_markup(self, args):
-        return f"- args:\n    name: {args['view_name']}\n    schema: {args['schema']}\n  type: add_existing_table_or_view\n"
-
-    def make_relationship_migration_markup(self, args):
-        relationships = self.config['relationships'].get(
-            args['module'], None)
-
-        if((not relationships or not len(relationships))):
-            return ""
-
-        script = ""
-        for relationship in relationships:
-            remote_view_name = module_to_db_object(
-                relationship["module"], self.config, "")
-
-            # MAKES YAML FILE. INDENTATIONS MATTERS!!!
-            script += (
-                f"""- args:
-    name: {relationship['name']}
-    table:
-      name: {args['view_name']}
-      schema: {args['schema']}
-    using:
-      manual_configuration:
-        column_mapping:
-          {self.primary_key}: {self.primary_key}
-        remote_table:
-          name: {remote_view_name}
-          schema: {args['schema']}
-  type: create_object_relationship
-""")
-
-        return script
-
-    def make_access_role_migrations(self):
-        migration_version = get_num_files_in_dir(MIGRATION_DIR) + 1
-        migration_file_name = f"{migration_version}__{self.config['tables']['prefix']}access_roles.up.yaml"
-
-        pretty_print(f"Making Migration File {migration_file_name}", True)
-
-        migration_script = ""
-        migration_file = open(MIGRATION_DIR + migration_file_name, 'w')
-
-        columns = [self.primary_key]
-        for row in self.df_layout.itertuples():
             if (row.view_column_name != self.primary_key):
                 columns.append(row.view_column_name)
 
             if(row.is_last_column):
-                migration_script = self.make_role_access_markup(
-                    row.view_name, columns)
-                columns = [self.primary_key]
+                view_migration_data = markup_method({
+                    "view_name": row.view_name,
+                    "schema": self.db_schema,
+                    "module": row.module,
+                    "columns": columns
+                })
 
-                migration_file.write(migration_script)
+                # print('type', type(view_migration_data))
+                if(view_migration_data):
+                    if(isinstance(view_migration_data, (list,))):
+                        for item in view_migration_data:
+                            yaml_data.append(item)
+                    else:
+                        yaml_data.append(view_migration_data)
 
-        migration_file.close()
+        with open(MIGRATION_DIR + migration_file_name, 'w') as yaml_file:
+            noalias_dumper = yaml.dumper.SafeDumper
+            noalias_dumper.ignore_aliases = lambda self, data: True
+            yaml.dump(yaml_data, yaml_file, default_flow_style=False,
+                      Dumper=noalias_dumper)
+            yaml_file.close()
 
-    def make_role_access_markup(self, view_name, columns):
+    def make_view_migration_yaml(self, args):
+        return ({
+            "args": {
+                "name": args['view_name'],
+                "schema": args['schema']
+            },
+            "type": "add_existing_table_or_view"
+        })
+
+    def make_relationship_migration_yaml(self, args):
+        relationships = self.config['relationships'].get(
+            args['module'], None)
+
+        if((not relationships or not len(relationships))):
+            return None
+
+        data = []
+        for relationship in relationships:
+            remote_view_name = module_to_db_object(
+                relationship["module"], self.config, "")
+
+            data.append({
+                "args": {
+                    "name": relationship['name'],
+                    "table": {
+                        "name": args['view_name'],
+                        "schema": args['schema']
+                    },
+                    "using": {
+                        "manual_configuration": {
+                            "column_mapping": {
+                                self.primary_key: self.primary_key
+                            },
+                            "remote_table": {
+                                "name": remote_view_name,
+                                "schema": args['schema']
+                            }
+                        }
+                    },
+                },
+                "type": "create_object_relationship"
+            })
+
+        return data
+
+    def make_role_access_yaml(self, args):
         roles_config = self.config['roles']
-        markup = ""
-        columns_markup = ""
+        data = []
 
-        for val in columns:
-            columns_markup += f"\n      - {val}"
-        # print('access', view_name, columns_markup)
-
+        # print('cols', args['columns'])
         for role, settings in roles_config.items():
-            markup += (
-                f"""- args:
-    permission:
-      allow_aggregations: true
-      columns:{columns_markup}
-      filter: {settings["filter"] if settings["filter"] else {}}
-      limit: {settings["limit"] if settings["limit"] else "null"}
-    role: {role}
-    table:
-      name: {view_name}
-      schema: {self.db_schema}
-  type: create_select_permission
-""")
+            data.append({
+                "args": {
+                    "permission": {
+                        "allow_aggregations": True,
+                        "columns": args['columns'],
+                        "filter": settings["filter"] if settings["filter"] else {},
+                        "limit": settings["limit"] if settings["limit"] else None
+                    },
+                    "role": role,
+                    "table": {
+                        "name": args['view_name'],
+                        "schema": self.db_schema,
+                    },
+                },
+                "type": "create_select_permission"
+            })
+        return data
 
-        return markup
+
+filter:
+    identification:
+        state:
+            _eq: X-Hasura-State
+
+            filter:
+    state:
+        _eq: X-Hasura-State
