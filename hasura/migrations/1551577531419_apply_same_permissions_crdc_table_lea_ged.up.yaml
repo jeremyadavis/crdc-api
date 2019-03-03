@@ -1,0 +1,124 @@
+- args:
+    role: user
+    table:
+      name: lea_ged
+      schema: crdc
+  type: drop_select_permission
+- args:
+    permission:
+      allow_aggregations: true
+      columns:
+      - leaid
+      - indicator
+      - participants_hispanic_male
+      - participants_hispanic_female
+      - participants_american_indian_male
+      - participants_american_indian_female
+      - participants_asian_male
+      - participants_asian_female
+      - participants_pacific_islander_male
+      - participants_pacific_islander_female
+      - participants_black_male
+      - participants_black_female
+      - participants_white_male
+      - participants_white_female
+      - participants_multiracial_male
+      - participants_multiracial_female
+      - total_participants_male
+      - total_participants_female
+      - participants_lep_male
+      - participants_lep_female
+      - participants_idea_male
+      - participants_idea_female
+      - credential_hispanic_male
+      - credential_hispanic_female
+      - credential_american_indian_male
+      - credential_american_indian_female
+      - credential_asian_male
+      - credential_asian_female
+      - credential_pacific_islander_male
+      - credential_pacific_islander_female
+      - credential_black_male
+      - credential_black_female
+      - credential_white_male
+      - credential_white_female
+      - credential_multiracial_male
+      - credential_multiracial_female
+      - total_credential_male
+      - total_credential_female
+      - credential_lep_male
+      - credential_lep_female
+      - credential_idea_male
+      - credential_idea_female
+      filter:
+        identification:
+          state:
+            _eq: X-Hasura-State
+      limit: 1000
+    role: user
+    table:
+      name: lea_ged
+      schema: crdc
+  type: create_select_permission
+- args:
+    role: user_state
+    table:
+      name: lea_ged
+      schema: crdc
+  type: drop_select_permission
+- args:
+    permission:
+      allow_aggregations: true
+      columns:
+      - leaid
+      - indicator
+      - participants_hispanic_male
+      - participants_hispanic_female
+      - participants_american_indian_male
+      - participants_american_indian_female
+      - participants_asian_male
+      - participants_asian_female
+      - participants_pacific_islander_male
+      - participants_pacific_islander_female
+      - participants_black_male
+      - participants_black_female
+      - participants_white_male
+      - participants_white_female
+      - participants_multiracial_male
+      - participants_multiracial_female
+      - total_participants_male
+      - total_participants_female
+      - participants_lep_male
+      - participants_lep_female
+      - participants_idea_male
+      - participants_idea_female
+      - credential_hispanic_male
+      - credential_hispanic_female
+      - credential_american_indian_male
+      - credential_american_indian_female
+      - credential_asian_male
+      - credential_asian_female
+      - credential_pacific_islander_male
+      - credential_pacific_islander_female
+      - credential_black_male
+      - credential_black_female
+      - credential_white_male
+      - credential_white_female
+      - credential_multiracial_male
+      - credential_multiracial_female
+      - total_credential_male
+      - total_credential_female
+      - credential_lep_male
+      - credential_lep_female
+      - credential_idea_male
+      - credential_idea_female
+      filter:
+        identification:
+          state:
+            _eq: X-Hasura-State
+      limit: 1000
+    role: user_state
+    table:
+      name: lea_ged
+      schema: crdc
+  type: create_select_permission

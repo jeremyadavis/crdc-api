@@ -1,6 +1,0 @@
-- args:
-    role: state_user
-    table:
-      name: lea
-      schema: crdc
-  type: drop_select_permission

@@ -1,3 +1,4 @@
+
 from constants import (
     OUTPUT_DIR,
     MIGRATION_DIR,
@@ -94,6 +95,8 @@ class DataMaker:
         self.make_migration_file(
             'create_all_relationships', self.make_relationship_migration_markup)
 
+        self.make_access_role_migrations()
+
     def make_migration_file(self, file_name, markup_method):
         migration_version = get_num_files_in_dir(MIGRATION_DIR) + 1
         migration_file_name = f"{migration_version}__{self.config['tables']['prefix']}{file_name}.up.yaml"
@@ -148,3 +151,52 @@ class DataMaker:
 """)
 
         return script
+
+    def make_access_role_migrations(self):
+        migration_version = get_num_files_in_dir(MIGRATION_DIR) + 1
+        migration_file_name = f"{migration_version}__{self.config['tables']['prefix']}access_roles.up.yaml"
+
+        pretty_print(f"Making Migration File {migration_file_name}", True)
+
+        migration_script = ""
+        migration_file = open(MIGRATION_DIR + migration_file_name, 'w')
+
+        columns = [self.primary_key]
+        for row in self.df_layout.itertuples():
+            if (row.view_column_name != self.primary_key):
+                columns.append(row.view_column_name)
+
+            if(row.is_last_column):
+                migration_script = self.make_role_access_markup(
+                    row.view_name, columns)
+                columns = [self.primary_key]
+
+                migration_file.write(migration_script)
+
+        migration_file.close()
+
+    def make_role_access_markup(self, view_name, columns):
+        roles_config = self.config['roles']
+        markup = ""
+        columns_markup = ""
+
+        for val in columns:
+            columns_markup += f"\n      - {val}"
+        # print('access', view_name, columns_markup)
+
+        for role, settings in roles_config.items():
+            markup += (
+                f"""- args:
+    permission:
+      allow_aggregations: true
+      columns:{columns_markup}
+      filter: {settings["filter"] if settings["filter"] else {}}
+      limit: {settings["limit"] if settings["limit"] else "null"}
+    role: {role}
+    table:
+      name: {view_name}
+      schema: {self.db_schema}
+  type: create_select_permission
+""")
+
+        return markup

@@ -88,5 +88,15 @@
         "module": "Identification"
       }
     ]
+  },
+  "roles": {
+    "user": {
+      "limit": null,
+      "filter": null
+    },
+    "user_state": {
+      "limit": 1000,
+      "filter": null
+    }
   }
 }
