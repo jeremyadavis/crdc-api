@@ -25,7 +25,7 @@ services:
   #     # HASURA_GRAPHQL_ACCESS_KEY: mysecretaccesskey
   graphql-engine:
     # image: hasura/graphql-engine:latest
-    image: hasura/graphql-engine:v1.0.0-alpha38.cli-migrations
+    image: hasura/graphql-engine:v1.0.0-alpha39.cli-migrations
     ports:
       - '8080:8080'
     depends_on:

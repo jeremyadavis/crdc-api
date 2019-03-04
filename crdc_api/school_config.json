@@ -168,128 +168,39 @@
     }
   },
   "relationships": {
-    "Identification": [
-      {
-        "name": "characteristics",
-        "module": "School Characteristics"
-      },
-      {
-        "name": "enrollment",
-        "module": "Enrollment"
-      },
-      {
-        "name": "gifted",
-        "module": "Gifted and Talented"
-      },
-      {
-        "name": "dual_enrollment",
-        "module": "Dual Enrollment"
-      },
-      {
-        "name": "algebrai",
-        "module": "Algebra I"
-      },
-      {
-        "name": "geometry",
-        "module": "Geometry"
-      },
-      {
-        "name": "algebraii",
-        "module": "Algebra II"
-      },
-      {
-        "name": "calculus",
-        "module": "Calculus"
-      },
-      {
-        "name": "advanced_mathematics",
-        "module": "Advanced Mathematics"
-      },
-      {
-        "name": "biology",
-        "module": "Biology"
-      },
-      {
-        "name": "chemistry",
-        "module": "Chemistry"
-      },
-      {
-        "name": "physics",
-        "module": "Physics"
-      },
-      {
-        "name": "ss_classes",
-        "module": "Single-sex Classes"
-      },
-      {
-        "name": "ap",
-        "module": "Advanced Placement"
-      },
-      {
-        "name": "international_baccalaureate",
-        "module": "International Baccalaureate"
-      },
-      {
-        "name": "sat_act",
-        "module": "SAT and ACT Exams"
-      },
-      {
-        "name": "corporal_punishment",
-        "module": "Corporal Punishment"
-      },
-      {
-        "name": "suspensions",
-        "module": "Suspensions"
-      },
-      {
-        "name": "expulsions",
-        "module": "Expulsions"
-      },
-      {
-        "name": "transfers",
-        "module": "Transfers"
-      },
-      {
-        "name": "referrals_arrests",
-        "module": "Referrals and Arrests"
-      },
-      {
-        "name": "offenses",
-        "module": "Offenses"
-      },
-      {
-        "name": "restraint_seclusion",
-        "module": "Restraint and Seclusion"
-      },
-      {
-        "name": "harassment_bullying",
-        "module": "Harassment and Bullying"
-      },
-      {
-        "name": "chronic_absenteeism",
-        "module": "Chronic Absenteeism"
-      },
-      {
-        "name": "retention",
-        "module": "Retention"
-      },
-      {
-        "name": "ss_athletics",
-        "module": "Single-Sex Athletics"
-      },
-      {
-        "name": "expenditures",
-        "module": "School Expenditures"
-      },
-      {
-        "name": "support",
-        "module": "School Support"
-      },
-      {
-        "name": "justice_facility",
-        "module": "Justice Facility"
-      }
-    ]
+    "primary_module": "Identification",
+    "primary_to_secondary_map": {
+      "School Characteristics": "characteristics",
+      "Enrollment": "enrollment",
+      "Gifted and Talented": "gifted",
+      "Dual Enrollment": "dual_enrollment",
+      "Algebra I": "algebra_I",
+      "Geometry": "geometry",
+      "Algebra II": "algebra_II",
+      "Calculus": "algebraii",
+      "Advanced Mathematics": "advanced_mathematics",
+      "Biology": "biology",
+      "Chemistry": "chemistry",
+      "Physics": "physics",
+      "Single-sex Classes": "ss_classes",
+      "Advanced Placement": "ap",
+      "International Baccalaureate": "international_baccalaureate",
+      "Corporal Punishment": "corporal_punishment",
+      "Suspensions": "suspensions",
+      "Expulsions": "expulsions",
+      "Transfers": "transfers",
+      "Referrals and Arrests": "referrals_arrests",
+      "Offenses": "offenses",
+      "Restraint and Seclusion": "restraint_seclusion",
+      "Harassment and Bullying": "harassment_bullying",
+      "Chronic Absenteeism": "chronic_absenteeism",
+      "Retention": "retention",
+      "Single-Sex Athletics": "ss_athletics",
+      "School Expenditures": "expenditures",
+      "School Support": "support",
+      "Justice Facility": "justice_facility"
+    },
+    "secondary_to_primary_field": "identification"
   },
   "roles": {
     "user": {
@@ -300,7 +211,7 @@
       "limit": 1000,
       "filter": {
         "source_module": "Identification",
-        "source_view_column": "state",
+        "source_view_column": "lea_state",
         "hasura_variable": "X-Hasura-State"
       }
     }

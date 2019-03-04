@@ -56,12 +56,12 @@
   },
   "relationships": {
     "primary_module": "Identification",
-    "map_secondary_modules_to_field": {
+    "primary_to_secondary_map": {
       "LEA Characteristics": "characteristics",
       "High School Equivalency (GED)": "ged",
       "Distance Education": "distance_education"
     },
-    "field_to_primary_module": "identification"
+    "secondary_to_primary_field": "identification"
   },
   "roles": {
     "user": {

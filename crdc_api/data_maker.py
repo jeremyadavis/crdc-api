@@ -145,17 +145,31 @@ class DataMaker:
         })
 
     def make_relationship_migration_yaml(self, args):
-        relationships = self.config['relationships'].get(
-            args['module'], None)
+        relationships_config = self.config['relationships']
+        primary_module = relationships_config['primary_module']
+        primary_to_secondary_map = relationships_config['primary_to_secondary_map']
+        secondary_to_primary_field = relationships_config['secondary_to_primary_field']
 
-        if((not relationships or not len(relationships))):
+        if((not relationships_config)):
             return None
 
         data = []
-        for relationship in relationships:
-            remote_view_name = module_to_db_object(
-                relationship["module"], self.config, "")
+        relationships = []
+        if(args['module'] == primary_module):
+            for module, name in primary_to_secondary_map.items():
+                relationships.append({
+                    "name": name,
+                    "remote_view_name": module_to_db_object(
+                        module, self.config, "")
+                })
+        else:
+            relationships.append({
+                "name": secondary_to_primary_field,
+                "remote_view_name": module_to_db_object(
+                    primary_module, self.config, "")
+            })
 
+        for relationship in relationships:
             data.append({
                 "args": {
                     "name": relationship['name'],
@@ -169,7 +183,7 @@ class DataMaker:
                                 self.primary_key: self.primary_key
                             },
                             "remote_table": {
-                                "name": remote_view_name,
+                                "name": relationship['remote_view_name'],
                                 "schema": args['schema']
                             }
                         }
@@ -201,11 +215,8 @@ class DataMaker:
                 if(filter_config["source_module"] == args['module']):
                     filter = condition
                 else:
-                  # Curr Model isn't source module, so have to use relationship field to get to filter column
-                    module_relationships = self.config['relationships'].get(
-                        args['module'])
-                    relationship_field = [
-                        x['name'] for x in module_relationships if x['module'] == filter_config['source_module']][0]
+                    # Curr Model isn't source module, so have to use relationship field to get to filter column
+                    relationship_field = self.config['relationships']['secondary_to_primary_field']
 
                     filter = {
                         relationship_field: condition
