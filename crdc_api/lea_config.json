@@ -1,5 +1,4 @@
 {
-  "schema": "crdc",
   "tables": {
     "prefix": "lea_",
     "primary_key": "leaid",
@@ -56,38 +55,13 @@
     }
   },
   "relationships": {
-    "Identification": [
-      {
-        "name": "characteristics",
-        "module": "LEA Characteristics"
-      },
-      {
-        "name": "ged",
-        "module": "High School Equivalency (GED)"
-      },
-      {
-        "name": "distance_education",
-        "module": "Distance Education"
-      }
-    ],
-    "LEA Characteristics": [
-      {
-        "name": "identification",
-        "module": "Identification"
-      }
-    ],
-    "High School Equivalency (GED)": [
-      {
-        "name": "identification",
-        "module": "Identification"
-      }
-    ],
-    "Distance Education": [
-      {
-        "name": "identification",
-        "module": "Identification"
-      }
-    ]
+    "primary_module": "Identification",
+    "map_secondary_modules_to_field": {
+      "LEA Characteristics": "characteristics",
+      "High School Equivalency (GED)": "ged",
+      "Distance Education": "distance_education"
+    },
+    "field_to_primary_module": "identification"
   },
   "roles": {
     "user": {
@@ -96,7 +70,11 @@
     },
     "user_state": {
       "limit": 1000,
-      "filter": null
+      "filter": {
+        "source_module": "Identification",
+        "source_view_column": "state",
+        "hasura_variable": "X-Hasura-State"
+      }
     }
   }
 }

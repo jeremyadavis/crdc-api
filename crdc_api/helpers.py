@@ -67,10 +67,6 @@ def get_table_primary_key(config):
     return config['tables']['primary_key']
 
 
-def get_db_schema(config):
-    return config['schema']
-
-
 def make_table_row_map(df_layout, primary_key):
     curr_table_name = ""
     table_row_map = {}

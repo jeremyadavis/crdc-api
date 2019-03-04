@@ -1,5 +1,4 @@
 {
-  "schema": "crdc",
   "tables": {
     "prefix": "sch_",
     "primary_key": "combokey",
@@ -291,5 +290,19 @@
         "module": "Justice Facility"
       }
     ]
+  },
+  "roles": {
+    "user": {
+      "limit": null,
+      "filter": null
+    },
+    "user_state": {
+      "limit": 1000,
+      "filter": {
+        "source_module": "Identification",
+        "source_view_column": "state",
+        "hasura_variable": "X-Hasura-State"
+      }
+    }
   }
 }

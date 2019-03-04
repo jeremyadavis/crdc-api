@@ -1,4 +1,5 @@
 {
   "url": "postgresql://postgres:@localhost:5432/postgres",
-  "schema": "crdc"
+  "schema": "crdc",
+  "row_insert_limit": 1000
 }

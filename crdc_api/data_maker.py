@@ -10,7 +10,6 @@ from helpers import (
     get_data_file,
     make_table_row_map,
     get_table_primary_key,
-    get_db_schema
 )
 
 from utils import (
@@ -23,15 +22,16 @@ from translator import module_to_db_object
 
 
 class DataMaker:
-    def __init__(self, engine, data_files, config):
+    def __init__(self, engine, data_files, config, db_config):
         self.engine = engine
         # self.data_file_index = config['data_file_index'].lower()
         # self.table_prefix = config['table_prefix']
         self.df_layout = get_layout_file(data_files['layout_file'], config)
-        self.df_data = get_data_file(data_files['data_file'], config, 1000)
+        self.df_data = get_data_file(
+            data_files['data_file'], config, db_config['row_insert_limit'])
         self.config = config
         self.primary_key = get_table_primary_key(config)
-        self.db_schema = get_db_schema(config)
+        self.db_schema = db_config['schema']
 
     def make_tables_and_files(self):
         table_map = make_table_row_map(
@@ -181,17 +181,42 @@ class DataMaker:
         return data
 
     def make_role_access_yaml(self, args):
+
         roles_config = self.config['roles']
         data = []
 
         # print('cols', args['columns'])
         for role, settings in roles_config.items():
+
+            filter_config = settings["filter"]
+            filter = {}
+
+            if(filter_config):
+                condition = {
+                    filter_config["source_view_column"]: {
+                        "_eq": filter_config["hasura_variable"]
+                    }
+                }
+                # Curr Module is Source Module
+                if(filter_config["source_module"] == args['module']):
+                    filter = condition
+                else:
+                  # Curr Model isn't source module, so have to use relationship field to get to filter column
+                    module_relationships = self.config['relationships'].get(
+                        args['module'])
+                    relationship_field = [
+                        x['name'] for x in module_relationships if x['module'] == filter_config['source_module']][0]
+
+                    filter = {
+                        relationship_field: condition
+                    }
+
             data.append({
                 "args": {
                     "permission": {
                         "allow_aggregations": True,
                         "columns": args['columns'],
-                        "filter": settings["filter"] if settings["filter"] else {},
+                        "filter": filter,
                         "limit": settings["limit"] if settings["limit"] else None
                     },
                     "role": role,
@@ -205,11 +230,11 @@ class DataMaker:
         return data
 
 
-filter:
-    identification:
-        state:
-            _eq: X-Hasura-State
+# filter:
+#     identification:
+#         state:
+#             _eq: X-Hasura-State
 
-            filter:
-    state:
-        _eq: X-Hasura-State
+#             filter:
+#     state:
+#         _eq: X-Hasura-State
