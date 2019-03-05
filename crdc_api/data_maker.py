@@ -15,7 +15,8 @@ from helpers import (
 from utils import (
     execute_sql,
     pretty_print,
-    get_num_files_in_dir
+    get_num_files_in_dir,
+    create_directory
 )
 
 from translator import module_to_db_object
@@ -41,12 +42,14 @@ class DataMaker:
             pretty_print(f"Making Table {table_name}", True)
             df_filtered = self.df_data.loc[:, df_columns]
 
+            # print(df_filtered.head(200))
             # CSV OUTPUT
-            # df_filtered.to_csv(OUTPUT_DIR + "csv/" + table_name + ".csv")
+            # create_directory(OUTPUT_DIR + 'dump/', True)
+            # df_filtered.to_csv(OUTPUT_DIR + table_name + ".csv")
 
             # DATABASE OUTPUT
             df_filtered.to_sql(table_name, self.engine,
-                               #  if_exists="replace",
+                               if_exists="replace",
                                method="multi",
                                schema=self.db_schema,
                                chunksize=10000)

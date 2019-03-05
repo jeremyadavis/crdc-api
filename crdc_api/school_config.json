@@ -1,7 +1,13 @@
 {
   "tables": {
     "prefix": "sch_",
-    "primary_key": "combokey",
+    "primary_key": {
+      "name": "combokey",
+      "composed": [
+        { "column": "leaid", "fill": 0 },
+        { "column": "schid", "fill": 5 }
+      ]
+    },
     "module_translations": {
       "Identification": {
         "value": "school",

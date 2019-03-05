@@ -1,7 +1,9 @@
 {
   "tables": {
     "prefix": "lea_",
-    "primary_key": "leaid",
+    "primary_key": {
+      "name": "leaid"
+    },
     "module_translations": {
       "Identification": {
         "value": "lea",
