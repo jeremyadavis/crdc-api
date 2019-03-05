@@ -8,21 +8,6 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
-  # graphql-engine:
-  #   image: hasura/graphql-engine:latest
-  #   # image: hasura/graphql-engine:v1.0.0-alpha28.cli-migrations
-  #   ports:
-  #     - '8080:8080'
-  #   depends_on:
-  #     - 'postgres'
-  #   restart: always
-  #   # volumes:
-  #   #   - /Users/jdavis/Sites/crdc_api/data/migrations:/hasura-migrations
-  #   environment:
-  #     HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:@postgres:5432/postgres
-  #     HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
-  #     ## uncomment next line to set an access key
-  #     # HASURA_GRAPHQL_ACCESS_KEY: mysecretaccesskey
   graphql-engine:
     # image: hasura/graphql-engine:latest
     image: hasura/graphql-engine:v1.0.0-alpha39.cli-migrations
@@ -37,6 +22,7 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:@postgres:5432/postgres
       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
       ## uncomment next line to set an access key
-      # HASURA_GRAPHQL_ACCESS_KEY: mysecretaccesskey
+      ## https://docs.docker.com/compose/environment-variables/
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
 volumes:
   db_data:
