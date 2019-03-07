@@ -66,12 +66,24 @@
     "secondary_to_primary_field": "identification"
   },
   "roles": {
+    "anonymous": {
+      "limit": 1000,
+      "filter": null
+    },
+    "anonymous_state": {
+      "limit": 100,
+      "filter": {
+        "source_module": "Identification",
+        "source_view_column": "state",
+        "hasura_variable": "X-Hasura-State"
+      }
+    },
     "user": {
       "limit": null,
       "filter": null
     },
     "user_state": {
-      "limit": 1000,
+      "limit": null,
       "filter": {
         "source_module": "Identification",
         "source_view_column": "state",
